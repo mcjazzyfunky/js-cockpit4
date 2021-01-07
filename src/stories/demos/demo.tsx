@@ -7,46 +7,90 @@ import { DateField } from '../../main/components/date-field/date-field'
 export default define('demo-app', () => {
   const columns = [
     {
-      type: 'column',
-      text: 'XXX'
-    },
-    {
-      type: 'columnGroup',
+      type: 'column-group',
       text: 'Name',
       columns: [
         {
           type: 'column',
-          text: 'First name'
+          text: 'First name',
+          field: 'firstName'
         },
         {
           type: 'column',
-          text: 'Last name'
+          text: 'Last name',
+          field: 'lastName'
         }
       ]
     },
     {
       text: 'Address',
-      type: 'columnGroup',
+      type: 'column-group',
       columns: [
         {
           type: 'column',
-          text: 'Street'
+          text: 'Street',
+          field: 'street'
         },
         {
           type: 'column',
-          text: 'Postcode'
+          text: 'Postcode',
+          field: 'postcode'
         },
         {
           type: 'column',
-          text: 'City'
+          text: 'City',
+          field: 'city'
         }
       ]
     }
   ]
 
+  const data = [
+    {
+      firstName: 'Jane',
+      lastName: 'Doe',
+      street: 'Golden Avenue 11',
+      postcode: 12345,
+      city: 'New York',
+      country: 'USA'
+    },
+    {
+      firstName: 'John',
+      lastName: 'Doe',
+      street: 'Golden Avenue 11',
+      postcode: 12345,
+      city: 'New York',
+      country: 'USA'
+    },
+    {
+      firstName: 'Peter',
+      lastName: 'Goodyear',
+      street: 'Main Street 123',
+      postcode: 98765,
+      city: 'Los Angeles',
+      country: 'USA'
+    },
+    {
+      firstName: 'Mary',
+      lastName: 'Smith',
+      street: 'Long Road 123',
+      postcode: 45678,
+      city: 'London',
+      country: 'Great Britain'
+    },
+    {
+      firstName: 'Julia',
+      lastName: 'Mayfield',
+      street: 'Main Road 99',
+      postcode: 65432,
+      city: 'Sidney',
+      country: 'Australia'
+    }
+  ]
+
   return () => (
     <div>
-      <DataTable columns={columns} />
+      <DataTable columns={columns} data={data} />
     </div>
   )
 })

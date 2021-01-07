@@ -33,7 +33,7 @@ type DataTableProps = {
   sortField?: number | string | null
   sortDir?: 'asc' | 'desc'
   selectMode?: 'single' | 'multi' | 'none'
-  data?: any[][] | object[]
+  data?: any[][] | object[] | null
 }
 
 type Column =
@@ -45,7 +45,7 @@ type Column =
       sortable?: boolean
     }
   | {
-      type: 'columnGroup'
+      type: 'column-group'
       text?: string
       columns: Column[]
     }
@@ -61,10 +61,17 @@ type DataTableViewModel = {
     sortable: boolean
   }[][]
 
+  columns: {
+    text: string
+    field: number | string | null
+    align: 'start' | 'center' | 'end'
+  }[]
+
   sortDir: 'asc' | 'desc'
   sortField: number | string | null
   selectMode: 'single' | 'multi' | 'none'
   selectedRows: Set<number | string>
+  data: any[][] | object[]
 }
 
 // === CustomElement =================================================
@@ -79,7 +86,8 @@ function createDataTableClass(
   config: DataTableConfig
 ): CustomElementConstructor {
   class DataTable extends HTMLElement {
-    columns: Column[] = []
+    columns?: Column[] = []
+    data?: any[] | object[]
 
     constructor() {
       super()
@@ -119,13 +127,20 @@ function buildDataTableViewModel(
   props: DataTableProps,
   selectedRows: Set<number | string>
 ): DataTableViewModel {
+  console.log(1111, props.data)
   const headerCells: DataTableViewModel['headerCells'] = []
+
   const deepestCells: [
     DataTableViewModel['headerCells'][any][any],
     number
   ][] = []
 
-  addHeaderCells(headerCells, props.columns, 0, deepestCells)
+  const columns: DataTableViewModel['columns'] = []
+
+  if (props.columns) {
+    addHeaderCells(headerCells, props.columns, 0, deepestCells)
+    addColumns(columns, props.columns)
+  }
 
   for (const [cell, depth] of deepestCells) {
     cell.rowSpan += headerCells.length - depth - 1
@@ -133,10 +148,12 @@ function buildDataTableViewModel(
 
   return {
     headerCells,
+    columns,
     selectedRows,
     selectMode: props.selectMode || 'none',
     sortDir: props.sortDir || 'asc',
-    sortField: props.sortField === undefined ? null : props.sortField
+    sortField: props.sortField === undefined ? null : props.sortField,
+    data: props.data || []
   }
 }
 
@@ -181,10 +198,27 @@ function addHeaderCells(
   }
 }
 
+function addColumns(
+  modelColumns: DataTableViewModel['columns'],
+  propsColumns: Exclude<DataTableProps['columns'], undefined>
+) {
+  for (const column of propsColumns) {
+    if (column.type === 'column') {
+      modelColumns.push({
+        text: column.text || '',
+        field: column.field || null,
+        align: column.align || 'start'
+      })
+    } else {
+      addColumns(modelColumns, column.columns)
+    }
+  }
+}
+
 // === render methods ================================================
 
 function renderDataTable(model: DataTableViewModel): Node {
-  const ret = h('table', null, renderTableHead(model))
+  const ret = h('table', null, renderTableHead(model), renderTableBody(model))
 
   return ret
 }
@@ -207,6 +241,27 @@ function renderTableHead(model: DataTableViewModel) {
   }
 
   return h('thead', null, rows)
+}
+
+function renderTableBody(model: DataTableViewModel): Node {
+  const rows: Node[] = []
+
+  for (const rec of model.data) {
+    const cells: (Node | null)[] = []
+
+    for (let colIdx = 0; colIdx < model.columns.length; ++colIdx) {
+      const column = model.columns[colIdx]
+      const field = column.field
+
+      const content = field ? h('div', null, (rec as any)[field]) : h('span') // TODO
+      const cell = h('td', null, content)
+      cells.push(cell)
+    }
+
+    rows.push(h('tr', null, cells))
+  }
+
+  return h('tbody', null, rows)
 }
 
 // === styles ========================================================
