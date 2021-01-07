@@ -1,4 +1,5 @@
 export { Brand } from './components/brand/brand'
+export { DataTable } from './components/data-table/data-table'
 export { DateField } from './components/date-field/date-field'
 export { Cockpit } from './components/cockpit/cockpit'
 export { DataExplorer } from './components/data-explorer/data-explorer'
