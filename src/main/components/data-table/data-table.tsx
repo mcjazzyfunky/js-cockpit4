@@ -1,5 +1,5 @@
 import { h as createElement, VNode } from 'js-elements'
-import { h } from '../../utils/dom'
+import { h, prop } from '../../utils/dom'
 
 const DataTableClass = createDataTableClass({
   name: 'jsc-date-field'
@@ -30,18 +30,22 @@ type CustomElementClass = {
 
 type DataTableProps = {
   columns?: Column[]
-  sortField?: string | number | null
+  sortField?: number | string | null
   sortDir?: 'asc' | 'desc'
   selectMode?: 'single' | 'multi' | 'none'
+  data?: any[][] | object[]
 }
 
 type Column =
   | {
+      type: 'column'
       text?: string
+      field?: number | string | null
       align?: 'start' | 'center' | 'end'
       sortable?: boolean
     }
   | {
+      type: 'columnGroup'
       text?: string
       columns: Column[]
     }
@@ -51,12 +55,11 @@ type DataTableConfig = {}
 type DataTableViewModel = {
   headerCells: {
     text: string
-    columnSpan: number
+    colSpan: number
     rowSpan: number
-    field: number | string
+    field: number | string | null
     sortable: boolean
-    isLastInRow: boolean
-  }[]
+  }[][]
 
   sortDir: 'asc' | 'desc'
   sortField: number | string | null
@@ -76,9 +79,12 @@ function createDataTableClass(
   config: DataTableConfig
 ): CustomElementConstructor {
   class DataTable extends HTMLElement {
+    columns: Column[] = []
+
     constructor() {
       super()
 
+      const selectedRows = new Set<number | string>()
       this.attachShadow({ mode: 'open' })
 
       this.connectedCallback = () => {
@@ -94,7 +100,10 @@ function createDataTableClass(
           root.removeChild(root.children[1])
         }
 
-        root.appendChild(h('div', null, 'woohoo'))
+        const model = buildDataTableViewModel(this, selectedRows)
+
+        console.log('model:', model)
+        root.appendChild(h('div', null, renderDataTable(model)))
       }
     }
 
@@ -111,8 +120,15 @@ function buildDataTableViewModel(
   selectedRows: Set<number | string>
 ): DataTableViewModel {
   const headerCells: DataTableViewModel['headerCells'] = []
+  const deepestCells: [
+    DataTableViewModel['headerCells'][any][any],
+    number
+  ][] = []
 
-  if (props.columns && props.columns.length > 0) {
+  addHeaderCells(headerCells, props.columns, 0, deepestCells)
+
+  for (const [cell, depth] of deepestCells) {
+    cell.rowSpan += headerCells.length - depth - 1
   }
 
   return {
@@ -122,6 +138,75 @@ function buildDataTableViewModel(
     sortDir: props.sortDir || 'asc',
     sortField: props.sortField === undefined ? null : props.sortField
   }
+}
+
+function addHeaderCells(
+  headerCells: DataTableViewModel['headerCells'],
+  columns: Column[] | undefined,
+  depth: number,
+  deepestCells: [DataTableViewModel['headerCells'][any][any], number][]
+): void {
+  if (!columns || columns.length === 0) {
+    return
+  }
+
+  if (!headerCells[depth]) {
+    headerCells.push([])
+  }
+
+  for (const column of columns) {
+    if (column.type === 'column') {
+      const cell = {
+        text: column.text || '',
+        colSpan: 1,
+        rowSpan: 1, // might be updated later
+        field: 'todo',
+        sortable: column.sortable || false
+      }
+
+      headerCells[depth].push(cell)
+      deepestCells.push([cell, depth])
+    } else {
+      const cell = {
+        text: column.text || '',
+        colSpan: column.columns.length,
+        rowSpan: 1, // will be set below
+        field: null,
+        sortable: false
+      }
+
+      headerCells[depth].push(cell)
+      addHeaderCells(headerCells, column.columns, depth + 1, deepestCells)
+    }
+  }
+}
+
+// === render methods ================================================
+
+function renderDataTable(model: DataTableViewModel): Node {
+  const ret = h('table', null, renderTableHead(model))
+
+  return ret
+}
+
+function renderTableHead(model: DataTableViewModel) {
+  let ret = null
+  const rows: Node[] = []
+
+  for (const headerRow of model.headerCells) {
+    const row: Node[] = []
+
+    for (const headerCol of headerRow) {
+      const cell = h('th', null, headerCol.text)
+      prop(cell, 'colSpan', headerCol.colSpan)
+      prop(cell, 'rowSpan', headerCol.rowSpan)
+      row.push(cell)
+    }
+
+    rows.push(h('tr', null, row))
+  }
+
+  return h('thead', null, rows)
 }
 
 // === styles ========================================================

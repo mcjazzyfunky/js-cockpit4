@@ -1,5 +1,13 @@
 type Renderable = Node | string | number | null | undefined | Renderable[]
 
+export function attr(elem: Element, name: string, value: string) {
+  elem.setAttribute(name, value)
+}
+
+export function prop(elem: Element, name: string, value: any) {
+  ;(elem as any)[name] = value
+}
+
 export function h(
   tagName: string,
   props?: Record<string, any> | null,
