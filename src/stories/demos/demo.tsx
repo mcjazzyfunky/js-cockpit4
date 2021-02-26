@@ -1,10 +1,10 @@
-import { define, h } from 'js-elements'
+import { component, h } from 'js-elements'
 import { DataExplorer } from 'js-cockpit'
 import { DataTable } from 'js-cockpit'
 
 import { DateField } from '../../main/components/date-field/date-field'
 
-export default define('demo-app', () => {
+export default component('demo-app', () => {
   const columns = [
     {
       type: 'column-group',
@@ -87,7 +87,7 @@ export default define('demo-app', () => {
       country: 'Australia'
     }
   ]
-
+  console.log('DataTable', (DataTable as any).tagName)
   return () => (
     <div>
       <DataTable columns={columns} data={data} />

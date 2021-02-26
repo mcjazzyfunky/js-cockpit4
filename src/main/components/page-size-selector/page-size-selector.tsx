@@ -1,4 +1,4 @@
-import { attr, define, h } from 'js-elements'
+import { attr, component, h } from 'js-elements'
 import { useStyles } from 'js-elements/hooks'
 import { defineCustomElements, setAssetPath } from '@shoelace-style/shoelace'
 
@@ -18,26 +18,28 @@ class PageSizeSelectorProps {
   disabled = false
 }
 
-export const PageSizeSelector = define('jsc-page-size-selector', PageSizeSelectorProps, (
-  p
-) => {
-  const onSelect = () => {}
+export const PageSizeSelector = component(
+  'jsc-page-size-selector',
+  PageSizeSelectorProps,
+  (p) => {
+    const onSelect = () => {}
 
-  useStyles(pageSizeSelectorStyles)
+    useStyles(pageSizeSelectorStyles)
 
-  return () => {
-    return (
-      <div class="root">
-        Page size:
-        <sl-select size="small" value="20">
-          <sl-menu-item value="10">10</sl-menu-item>
-          <sl-menu-item value="20">20</sl-menu-item>
-          <sl-menu-item value="30">30</sl-menu-item>
-        </sl-select>
-      </div>
-    )
+    return () => {
+      return (
+        <div class="root">
+          Page size:
+          <sl-select size="small" value="20">
+            <sl-menu-item value="10">10</sl-menu-item>
+            <sl-menu-item value="20">20</sl-menu-item>
+            <sl-menu-item value="30">30</sl-menu-item>
+          </sl-select>
+        </div>
+      )
+    }
   }
-})
+)
 
 const pageSizeSelectorStyles = `
   .root {

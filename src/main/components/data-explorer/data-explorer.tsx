@@ -1,4 +1,4 @@
-import { define, h } from 'js-elements'
+import { component, h } from 'js-elements'
 import { useState, useStyles } from 'js-elements/hooks'
 import { PageSizeSelector, Paginator, PaginationInfo } from 'js-cockpit'
 
@@ -6,9 +6,13 @@ class DataExplorerProps {
   title?: string
 }
 
-export const DataExplorer = define('jsc-data-explorer', DataExplorerProps, (
-  p
-) => {
+export const DataExplorer = component(
+  'jsc-data-explorer',
+  DataExplorerProps,
+  initDataExplorer
+)
+
+function initDataExplorer(p: DataExplorerProps) {
   const [s, set] = useState({
     pageIndex: 2,
     pageCount: 125,
@@ -49,7 +53,7 @@ export const DataExplorer = define('jsc-data-explorer', DataExplorerProps, (
       </div>
     )
   }
-})
+}
 
 const dataExplorerStyles = `
   .root {

@@ -1,4 +1,4 @@
-import { attr, define, h, html } from 'js-elements'
+import { attr, component, h, html } from 'js-elements'
 // import { defineElement } from 'js-elements/tools'
 import { useStyles } from 'js-elements/hooks'
 import { SlButton } from '@shoelace-style/shoelace'
@@ -14,7 +14,7 @@ class PaginatorProps {
   disabled = false
 }
 
-export const Paginator = define('jsc-paginator', PaginatorProps, (p) => {
+export const Paginator = component('jsc-paginator', PaginatorProps, (p) => {
   useStyles(paginatorStyles)
 
   return () => {

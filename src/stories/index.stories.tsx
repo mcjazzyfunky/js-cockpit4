@@ -6,8 +6,9 @@ export default {
 }
 
 function demo(demoClass: any) {
-  const cockpitTag = (Cockpit as any)[Symbol.for('tagName')]
-  const tagName = demoClass[Symbol.for('tagName')]
+  const cockpitTag = (Cockpit as any).tagName
+  const tagName = demoClass.tagName
+
   return () => `<${cockpitTag}><${tagName}></${tagName}><${cockpitTag}>`
 }
 

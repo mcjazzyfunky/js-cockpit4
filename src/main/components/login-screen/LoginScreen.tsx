@@ -1,4 +1,4 @@
-import { define, h } from 'js-elements'
+import { component, h } from 'js-elements'
 
 /*====================================================================
  * LoginScreen
@@ -10,7 +10,7 @@ class LoginScreenProps {
   performLogin?: (data: Record<string, any>) => Promise<void>
 }
 
-export default define('jsc-login-screen', LoginScreenProps, (p) => {
+export default component('jsc-login-screen', LoginScreenProps, (p) => {
   return () => {
     return (
       <div>

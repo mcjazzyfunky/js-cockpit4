@@ -1,4 +1,4 @@
-import { define, h } from 'js-elements'
+import { component, h } from 'js-elements'
 import { useStyles } from 'js-elements/hooks'
 
 class BrandProps {
@@ -8,7 +8,7 @@ class BrandProps {
   multicolor?: boolean
 }
 
-export const Brand = define('jsc-brand', BrandProps, (p) => {
+export const Brand = component('jsc-brand', BrandProps, (p) => {
   useStyles(brandStyles)
 
   return () => {

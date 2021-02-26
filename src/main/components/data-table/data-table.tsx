@@ -10,7 +10,7 @@ defineElement('jsc-data-table', DataTableClass)
 export const DataTable = (props: Record<string, any>, ...children: VNode[]) => {
   return createElement('jsc-data-table', props, children)
 }
-;(DataTable as any)[Symbol.for('tagName')] = 'jsc-data-table'
+;(DataTable as any).tagName = 'jsc-data-table'
 
 // === defineElement =================================================
 
@@ -127,7 +127,6 @@ function buildDataTableViewModel(
   props: DataTableProps,
   selectedRows: Set<number | string>
 ): DataTableViewModel {
-  console.log(1111, props.data)
   const headerCells: DataTableViewModel['headerCells'] = []
 
   const deepestCells: [
